@@ -3,7 +3,7 @@ use std::io::{self, BufRead};
 use std::path::Path;
 
 fn is_line_valid(line: &str) -> bool {
-    let numbers: Vec<i32> = line
+    let mut numbers: Vec<i32> = line
         .split_whitespace()
         .filter_map(|s| s.parse::<i32>().ok())
         .collect();
@@ -12,6 +12,24 @@ fn is_line_valid(line: &str) -> bool {
         return false; // A single number or empty line is not valid.
     }
 
+    if is_pattern_valid(&numbers) {
+        return true; // Line is valid as is.
+    }
+
+    // Try removing the first element that breaks the pattern.
+    for i in 0..numbers.len() {
+        let mut modified_numbers = numbers.clone();
+        modified_numbers.remove(i); // Remove the ith element.
+
+        if is_pattern_valid(&modified_numbers) {
+            return true; // Line is valid after removal.
+        }
+    }
+
+    false // Line is unsafe even after one removal.
+}
+
+fn is_pattern_valid(numbers: &[i32]) -> bool {
     let increasing = numbers
         .windows(2)
         .all(|w| w[1] - w[0] >= 1 && w[1] - w[0] <= 3);

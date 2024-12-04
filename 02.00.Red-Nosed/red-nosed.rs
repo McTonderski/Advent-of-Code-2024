@@ -12,23 +12,14 @@ fn is_line_valid(line: &str) -> bool {
         return false; // A single number or empty line is not valid.
     }
 
-    let mut increasing_mismatch = 0;
-    let mut decreasing_mismatch = 0;
+    let increasing = numbers
+        .windows(2)
+        .all(|w| w[1] - w[0] >= 1 && w[1] - w[0] <= 3);
+    let decreasing = numbers
+        .windows(2)
+        .all(|w| w[0] - w[1] >= 1 && w[0] - w[1] <= 3);
 
-    for window in numbers.windows(2) {
-        let diff = window[1] - window[0];
-        if !(1 <= diff && diff <= 3) {
-            increasing_mismatch += 1;
-        }
-        if !(-3 <= diff && diff <= -1) {
-            decreasing_mismatch += 1;
-        }
-        if increasing_mismatch > 1 && decreasing_mismatch > 1 {
-            return false;
-        }
-    }
-
-    true
+    increasing || decreasing
 }
 
 fn count_valid_lines(filename: &str) -> io::Result<usize> {
